@@ -128,10 +128,24 @@ public class RBTree implements RBTreeFunctions{
 	//else
 	{
 	    // Case 1: leaf node and it is RED
-	    if(node_to_be_deleted.left == null && node_to_be_deleted.right == null){
-		if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = null;
-		else node_to_be_deleted.parent.right = null;
+	    if(node_to_be_deleted.color == _RED && node_to_be_deleted.left == null && node_to_be_deleted.right == null){
+		if(node_to_be_deleted.parent != null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = null;
+		else if(node_to_be_deleted.parent != null) node_to_be_deleted.parent.right = null;
+		
 		return root;
+	    }
+	    else if(node_to_be_deleted.color == _BLACK && node_to_be_deleted.left == null && node_to_be_deleted.right == null){
+		
+		if(node_to_be_deleted.parent != null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = null;
+		else if(node_to_be_deleted.parent != null) node_to_be_deleted.parent.right = null;
+		
+		// Only one node left
+		if(node_to_be_deleted.parent == null)
+		    return null;
+		
+		RBNode temp = doubleBlackFIXUP(null,node_to_be_deleted.parent); 
+		if(temp.parent == null ) { temp.color = _BLACK;return temp;}
+		else return root;
 	    }
 	    else{
 		// Case 2: node_to_be_deleted has one left or right child
@@ -184,16 +198,22 @@ public class RBTree implements RBTreeFunctions{
 		    else if(node_to_be_deleted.color == _BLACK && inPre.color == _RED){  // node_to_be_deleted is black and child has red color
 			
 			// side fixing
-			if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
-			else node_to_be_deleted.parent.right = inPre;
+			if(node_to_be_deleted.parent != null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
+			else if(node_to_be_deleted.parent != null) node_to_be_deleted.parent.right = inPre;
 			
+			if(node_to_be_deleted.parent == null){
+			    inPre.parent = null; inPre.color = _BLACK; return inPre;
+			}
+			    
 			inPre.parent = node_to_be_deleted.parent;
 			inPre.color = _BLACK;
 			return root;
 		    }
 		    else{		// Double BLACK problem   (node_to_be_deleted.color == _BLACK && inPre.color = _BLACK)
-			if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
-			else node_to_be_deleted.parent.right = inPre;
+			
+			//side fixing
+			if(node_to_be_deleted.parent != null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
+			else if(node_to_be_deleted.parent != null) node_to_be_deleted.parent.right = inPre;
 			
 			inPre.parent = node_to_be_deleted.parent;
 			//System.out.println(inPre.key+""+inPre.parent.key+" "+inPre.parent.left.key);
@@ -208,41 +228,37 @@ public class RBTree implements RBTreeFunctions{
 		}
 	    }
 	}
-	 
     }
     
     private RBNode doubleBlackFIXUP(RBNode drbNode, RBNode  parent){
-	System.out.println("delete fix up is called..");
+	System.out.println("----------Delete FIXUP is called---------");
+	
 	if(parent == null) return drbNode;
 	
 	RBNode sibling = parent.left == drbNode ? parent.right : parent.left;
 	
-	//System.out.println(sibling.key);
-	// Case 1
-	if(sibling == null){  // sibling is black
-	    if(parent.color == _RED){				// parent color is red
-		parent.color  =  _BLACK; 
-	    }
-	    else{						// parent color is black
-		parent.color  =  _BLACK; 
-		// Again double red problem arises
-		return doubleBlackFIXUP(parent, parent.parent);
-	    }
-	}
-	else if(sibling.color == _RED){				// Case 1 : Uncle is RED
-	    System.out.println("Case 1 is called..");
+	
+	if(sibling.color == _RED){				// Case 1 : Uncle is RED
+	    System.out.println("----------Case 1 is called---------");
 	    if(sibling.parent.left == sibling){
 		drbNode = zigZigInverseType1(drbNode, parent, sibling,true);
+		sibling = parent.left;
 	    }
 	    else{
 		drbNode = zigZigInverseType2(drbNode, parent, sibling,true);
+		sibling = parent.right;
+		 
 	    }
 	}
+	
+	
 	// Case 2
 	if(sibling.color == _BLACK && ((sibling.left == null && sibling.right == null) || (sibling.left.color == _BLACK && sibling.right.color == _BLACK))){
-	    System.out.println("Case 2 is called..");
+	    System.out.println("----------Case 2 is called---------");
 	    if(parent.color == _RED){				// parent color is red
+		System.out.println("right here");
 		parent.color  =  _BLACK; sibling.color = _RED;
+		drbNode = parent;
 	    }
 	    else{						// parent color is black
 		parent.color  =  _BLACK; sibling.color = _RED;
@@ -251,21 +267,52 @@ public class RBTree implements RBTreeFunctions{
 	    }
 	}
 	// Case 3
-	else {
-	    System.out.println("Case 3 is called..");
+	if (sibling.color == _BLACK && ((sibling.right!=null && sibling.right.color == _RED) || (sibling.left!=null && sibling.left.color == _RED))){
+	    System.out.println("----------Case 3 is called---------");
+	    
 	    if(sibling.parent.left == sibling){
+		if(sibling.left!=null && sibling.left.color == _RED){
+		    RBNode e = sibling.right; e.parent = sibling.parent;
+		    RBNode z = e.left; 
+		    sibling.right = z;
+		    if(sibling.parent != null && sibling.parent.left == sibling) sibling.parent.left = e;
+		    else if(sibling.parent!=null) sibling.parent.right = e;
+		    sibling.parent = e;
+		    e.left = sibling;
+		    if(z != null) z.parent = sibling;
+		    e.color = sibling.color + e.color - (sibling.color = e.color);
+		    sibling = e;
+		}
+		if(sibling.right != null && sibling.left.color == _RED)
+		    drbNode = zigZigInverseType1(drbNode, parent,sibling,false);
 		 
-		drbNode = zigZigInverseType1(drbNode, parent, sibling, false);
+		
+		//drbNode = zigZigInverseType1(drbNode, parent, sibling, false);
 	    }
 	    else{
-		drbNode = zigZigInverseType2(drbNode, parent, sibling, false);
+		if(sibling.left!=null && sibling.left.color == _RED){
+		    RBNode d = sibling.left; d.parent = sibling.parent;
+		    RBNode w = d.right; 
+		    sibling.left = w;
+		    if(sibling.parent != null && sibling.parent.left == sibling) sibling.parent.left = d;
+		    else if(sibling.parent!=null) sibling.parent.right = d;
+		    sibling.parent = d;
+		    d.right = sibling;
+		    if(w != null) w.parent = sibling; 
+		    d.color = sibling.color + d.color - (sibling.color = d.color);
+		    sibling = d;
+		}
+		
+		if(sibling.right != null && sibling.right.color == _RED)
+		    drbNode = zigZigInverseType2(drbNode, parent,sibling,false);
 	    }
-	}
+	}	
+	
 	return drbNode;
     }
     
     private RBNode zigZigInverseType1(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
-	System.out.println("called Type 1");
+	//System.out.println("called Type 1");
 	
 	sibling.parent = parent.parent;
 	sibling.color  = parent.color;
@@ -282,11 +329,15 @@ public class RBTree implements RBTreeFunctions{
 	parent.color  = case1or3 == true ? _RED : _BLACK;
 	parent.left   = t1;
 	if(t1 != null) t1.parent = parent;
+	
+	if(!case1or3)
+	    if(sibling.left != null ) sibling.left.color = _BLACK;
 	return sibling;
 		
     }
     private RBNode zigZigInverseType2(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
-	System.out.println("called Type 2");
+	//System.out.println("called Type 2");
+	
 	sibling.parent = parent.parent;
 	sibling.color  = parent.color;
 	
@@ -297,11 +348,18 @@ public class RBTree implements RBTreeFunctions{
 	RBNode t1;
 	t1 = sibling.left;
 	
+	
+	
 	sibling.left = parent; 
 	parent.parent = sibling;
 	parent.color  = case1or3 == true ? _RED : _BLACK;
 	parent.right   = t1;
 	if(t1 != null) t1.parent=parent;
+	
+	if(!case1or3)
+	    if(sibling.right != null ) sibling.right.color = _BLACK;
+	
+	//System.out.println(parent.right.key);
 	return sibling;
 		
     }
@@ -466,8 +524,8 @@ public class RBTree implements RBTreeFunctions{
 	if(root == null)
 	    return;
 	System.out.println(root.key);
-	inOrder(root.left);	
-	inOrder(root.right);
+	preOrder(root.left);	
+	preOrder(root.right);
     }
 
     @Override
@@ -475,10 +533,8 @@ public class RBTree implements RBTreeFunctions{
 	// TODO Auto-generated method stub
 	if(root == null)
 	    return;
-	
 	inOrder(root.left);	
-	
-	System.out.println(root.key+" color:"+ (root.color == 0 ? "B":"R"));
+	System.out.println(root.key+" color:"+ (root.color == 0 ? "B":"R")+" left : "+ (root.left != null ? root.left.key : "n/a")+" right : "+ (root.right != null ? root.right.key : "n/a"));
 	inOrder(root.right);
     }
     
