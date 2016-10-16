@@ -163,16 +163,16 @@ public class RBTree implements RBTreeFunctions{
 		    else if(node_to_be_deleted.color == _BLACK && node_to_be_deleted.right.color == _RED){  // node_to_be_deleted is black and child has red color
 			
 			// side fixing
-			if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = node_to_be_deleted.right;
-			else node_to_be_deleted.parent.right = node_to_be_deleted.right;
+			if(node_to_be_deleted.parent!= null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = node_to_be_deleted.right;
+			else if(node_to_be_deleted.parent!= null) node_to_be_deleted.parent.right = node_to_be_deleted.right;
 			
 			node_to_be_deleted.right.parent = node_to_be_deleted.parent;
 			node_to_be_deleted.right.color = _BLACK;
 			return root;
 		    }
 		    else{		// Double BLACK problem
-			if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = node_to_be_deleted.right;
-			else node_to_be_deleted.parent.right = node_to_be_deleted.right;
+			if(node_to_be_deleted.parent!= null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = node_to_be_deleted.right;
+			else if(node_to_be_deleted.parent!= null) node_to_be_deleted.parent.right = node_to_be_deleted.right;
 			
 			node_to_be_deleted.right.parent = node_to_be_deleted.parent;
 			
@@ -188,8 +188,8 @@ public class RBTree implements RBTreeFunctions{
 		    if(node_to_be_deleted.color == _RED){		// node_to_be_deleted has red color
 			
 			// side fixing
-			if(node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
-			else node_to_be_deleted.parent.right = inPre;
+			if(node_to_be_deleted.parent!= null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = inPre;
+			else if(node_to_be_deleted.parent!= null) node_to_be_deleted.parent.right = inPre;
 			
 			inPre.parent = node_to_be_deleted.parent;
 			inPre.color  = _BLACK;
@@ -250,13 +250,10 @@ public class RBTree implements RBTreeFunctions{
 		 
 	    }
 	}
-	
-	
 	// Case 2
 	if(sibling.color == _BLACK && ((sibling.left == null && sibling.right == null) || (sibling.left.color == _BLACK && sibling.right.color == _BLACK))){
 	    System.out.println("----------Case 2 is called---------");
-	    if(parent.color == _RED){				// parent color is red
-		System.out.println("right here");
+	    if(parent.color == _RED){				// parent color is red		
 		parent.color  =  _BLACK; sibling.color = _RED;
 		drbNode = parent;
 	    }
