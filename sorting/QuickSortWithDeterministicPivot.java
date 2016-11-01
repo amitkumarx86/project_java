@@ -31,6 +31,7 @@ public class QuickSortWithDeterministicPivot {
                  i++;a[j]=a[i]+a[j]-(a[i]=a[j]);
              }	
          }
+         // swap i+1 and and last element
          a[i+1] = a[r] + a[i+1] - (a[r] = a[i+1]);
          return (++i);
      }

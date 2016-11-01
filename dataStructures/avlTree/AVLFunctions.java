@@ -1,4 +1,4 @@
-package avlTree;
+package dataStructures.avlTree;
 
 public interface AVLFunctions {
     abstract AVLNode insertAVL(int x, AVLNode root);

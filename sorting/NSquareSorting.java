@@ -16,7 +16,7 @@ public class NSquareSorting {
 	 * Swaps = n-1
 	 * */
 	
-	//selectionSort(a,1);
+	selectionSort(a,1);
 	/*
 	 * Number of comparisons in selection sort is n*(n-1)/2
 	 * Swaps = n-1
@@ -39,20 +39,28 @@ public class NSquareSorting {
     }
     public static void bubbleSort(int[] a, int order){
 	for(int i=0;i<a.length;i++){
-	    for(int j=1;j<a.length;j++){
-		if(order == 1 ? a[j-1] > a[j] : a[j-1] < a[j]) a[j-1]=a[j]+a[j-1]-(a[j]=a[j-1]);
+	    for(int j=0;j<a.length;j++){
+		/* compare the adjacent elements */ 
+		if(order == 1 ? a[j-1] > a[j] : a[j-1] < a[j]) 
+		    /* swap them */
+		    a[j-1]=a[j]+a[j-1]-(a[j]=a[j-1]);
 	    }
-	}
+	}	
 	printArray(a);
     }
     public static void selectionSort(int[] a, int order){
 	for(int i=0;i<a.length;i++){
-	    int max=a[0],loc=0;
-	    for(int j=0;j<a.length-i;j++){
-		// below logic changes the order of sort
-		if(order == 1 ? a[j] > max : a[j] < max) {max = a[j];loc=j;}
+	    /* set current element as minimum*/
+	    int loc = i;
+	    /* check the element to be minimum */
+	    for(int j = i+1 ; j<a.length;j++){
+		/*Order 1: increasing order
+		 * Order 0: decreasing order
+		 * */
+		if(order == 1 ? a[i] > a[j] : a[i] < a[j]) {loc = j;}
 	    }
-	    a[a.length-i-1]=a[loc]+a[a.length-i-1]-(a[loc]=a[a.length-i-1]);
+	    /* swap the minimum element with the current element*/
+	    if(loc != i) a[i]=a[loc]+a[i]-(a[loc]=a[i]);
 	}
 	printArray(a);
     }

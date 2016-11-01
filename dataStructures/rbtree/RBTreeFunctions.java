@@ -1,4 +1,4 @@
-package rbtree;
+package dataStructures.rbtree;
 
 public interface RBTreeFunctions {
     abstract RBNode insertRB(int x, RBNode root);

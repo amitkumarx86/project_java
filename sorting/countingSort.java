@@ -17,6 +17,7 @@ public class countingSort {
     public static void countNumbers(int[] ar){
         int max=ar[0];
         for(int i=1;i<ar.length;i++){if(max<ar[i]) max=ar[i];}
+        
         int[] temp = new int[max+1];
         for(int i=0;i<ar.length;i++)
             ++temp[ar[i]]; 
