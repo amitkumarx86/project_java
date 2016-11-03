@@ -1,6 +1,6 @@
 package graph.adjacencylist;
 
- import java.util.Arrays;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,8 +27,8 @@ public class Krushkal {
 	// Sort array in non-decreasing Order
 	Arrays.sort(edge, new Comparator<Edge>() {
 	        @Override
-	        public int compare(Edge o1, Edge o2) {
-	            return o1.weight - o2.weight; // or whatever property you want to sort
+	        public int compare(Edge e1, Edge e2) {
+	            return e1.weight - e2.weight; // or whatever property you want to sort
 	        }
 	    });
 	
