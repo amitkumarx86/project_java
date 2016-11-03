@@ -11,55 +11,8 @@ class Edge{
     Edge(Vertex u,Vertex v,int weight){this.weight = weight; this.u = u; this.v = v;}
 }
 public class Krushkal {
-    	public static int _NUM_OF_NODES=5;
-    	public static int _NUM_OF_EDGES=7;
-    	public static void main(String[] args) {
-	
-	Edge[] edge = new Edge[_NUM_OF_EDGES];
-	/*We are using PrirityQueue to implement Prim's MST
-	 * Complexity : (V + E ) * logV using binary heap
-	 * Complexity : E + Vlogv using fibonacci heap cause decrease key is constant in it 
-	 * */
-	
-	// Used edge list representation
-	initializeGraph(edge);
-	
-	// Sort array in non-decreasing Order
-	Arrays.sort(edge, new Comparator<Edge>() {
-	        @Override
-	        public int compare(Edge e1, Edge e2) {
-	            return e1.weight - e2.weight; // or whatever property you want to sort
-	        }
-	    });
-	
-	
-	// declare three arrays 
-	/*
-	 * 1. for having vertex -> color mapping
-	 * 2. for how many nodes are mapped to one color
-	 * 3. for given color code pointer to list of nodes
-	 * */
-	int[] vertex_color_mapping = new int[5];
-	int[] vertex_count_color   = new int[5];
-	Vertex[] color_to_vertex_pointer = new Vertex[5];
-	
-	initializeArrays(vertex_color_mapping,vertex_count_color,color_to_vertex_pointer);
-	
-	//Final Edge list
-	Edge[] mst = new Edge[_NUM_OF_EDGES];
-	int mst_i=0;
-	
-	System.out.println("Minimum Spanning Tree..");
-	for(int i=0;i<_NUM_OF_EDGES;i++) {
-	    if(cycleCheck(edge[i].u,edge[i].v,vertex_color_mapping,vertex_count_color,color_to_vertex_pointer)){
-		mst[mst_i++]=new Edge(edge[i].u,edge[i].v,edge[i].weight);
-	    }
-	    //else : it will create a cycle
-	
-	}
-	
-	printKrushkalMST(mst);
-    }
+    public static int _NUM_OF_NODES=5;
+    public static int _NUM_OF_EDGES=7;
     
     private static void initializeArrays(int[] vertex_color_mapping, int[] vertex_count_color,
 	    Vertex[] color_to_vertex_pointer) {
@@ -158,9 +111,54 @@ public class Krushkal {
 	edge[4] = new Edge(v5,v2,3);
 	edge[5] = new Edge(v5,v3,1);
 	edge[6] = new Edge(v4,v5,6);
- 
+    }
+    public static void main(String[] args) {
+		
+	Edge[] edge = new Edge[_NUM_OF_EDGES];
+	/*We are using PrirityQueue to implement Prim's MST
+	 * Complexity : (V + E ) * logV using binary heap
+	 * Complexity : E + Vlogv using fibonacci heap cause decrease key is constant in it 
+	 * */
 	
-       }
+	// Used edge list representation
+	initializeGraph(edge);
+	
+	// Sort array in non-decreasing Order
+	Arrays.sort(edge, new Comparator<Edge>() {
+	        @Override
+	        public int compare(Edge e1, Edge e2) {
+	            return e1.weight - e2.weight; // or whatever property you want to sort
+	        }
+	    });
+	
+	
+	// declare three arrays 
+	/*
+	 * 1. for having vertex -> color mapping
+	 * 2. for how many nodes are mapped to one color
+	 * 3. for given color code pointer to list of nodes
+	 * */
+	int[] vertex_color_mapping = new int[5];
+	int[] vertex_count_color   = new int[5];
+	Vertex[] color_to_vertex_pointer = new Vertex[5];
+	
+	initializeArrays(vertex_color_mapping,vertex_count_color,color_to_vertex_pointer);
+	
+	//Final Edge list
+	Edge[] mst = new Edge[_NUM_OF_EDGES];
+	int mst_i=0;
+	
+	System.out.println("Minimum Spanning Tree..");
+	for(int i=0;i<_NUM_OF_EDGES;i++) {
+	    if(cycleCheck(edge[i].u,edge[i].v,vertex_color_mapping,vertex_count_color,color_to_vertex_pointer)){
+		mst[mst_i++]=new Edge(edge[i].u,edge[i].v,edge[i].weight);
+	    }
+	    //else : it will create a cycle
+	
+	}
+	
+	printKrushkalMST(mst);
+    }
 }
 
 
