@@ -11,10 +11,10 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	while(node != null) {	    
 		if((node.right == null ? 0 : node.right.number_of_nodes) + 1 == rank)
 		    return node;
-		else if(rank < node.right.number_of_nodes + 1)
+		else if(rank < (node.right == null ? 0 : node.right.number_of_nodes) + 1)
 		    node=node.right;
 		else {
-		    rank -= 1+node.right.number_of_nodes ; 
+		    rank -= 1+(node.right == null ? 0 : node.right.number_of_nodes) ; 
 		    node=node.left;
 		}
     	}
@@ -144,7 +144,10 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	 
     }
     protected RBNode insertFIXUP(RBNode x, RBNode root){
+	boolean flag=false;
+	
 	while(x.parent != null && x.parent.color == _RED && x.color == _RED){
+	   
 	    if(x.parent == x.parent.parent.left){			// When x's parent is in left side of x's grand parent
 		RBNode uncle = x.parent.parent.right;			 
 		if(uncle != null && uncle.color == _RED){				 
@@ -152,7 +155,7 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    uncle.color = _BLACK; 				// case 1 y(Uncle's color is red
 		    x.parent.color = _BLACK; 				// case 1 
 		    x.parent.parent.color=_RED;				// case 1 
-		    x= x.parent.parent;					// case 1 
+		    x= x.parent.parent;					// case 1
 		}
 		else if(x == x.parent.right && (uncle == null || uncle.color == _BLACK)){
 		    //System.out.println("-------Case 2 applied-----------I");
@@ -160,13 +163,16 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    y = x.parent;					// case 2
 		    z = x.parent.parent;				// case 2
 		    x = zigZagType2(x,y,z);				// case 2
+		    System.out.println("Case 2"+x.key);
 		}
 		else if(x == x.parent.left && (uncle == null || uncle.color == _BLACK) && (x.parent.right == null || x.parent.right.color == _BLACK)){
 		    //System.out.println("-------Case 3 applied-----------I");
+		    
 		    RBNode y,z;						// case 3 (Sibling is black and Uncle is Black)
 		    y = x.parent;					// case 3
 		    z = x.parent.parent;				// case 3
 		    x = zigZigType2(x,y,z);				// case 3
+		    
 		}
 	    }
 	    else{							// When x's parent is in right side of x's grand parent
@@ -177,28 +183,41 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    uncle.color = _BLACK; 				// case 1 
 		    x.parent.color = _BLACK; 				// case 1 
 		    x.parent.parent.color=_RED;				// case 1 
-		    x= x.parent.parent;					// case 1 
+		    x= x.parent.parent;					// case 1
+		   
 		}
 		else if(x == x.parent.left && (uncle == null || uncle.color == _BLACK)){
 		    //System.out.println("-------Case 2 applied-----------II");
 		    RBNode y,z;						// case 2 (Uncle is BLACK) 
 		    y = x.parent;					// case 2
 		    z = x.parent.parent;				// case 2
+		   
 		    x = zigZagType1(x,y,z);				// case 2
+		   
 		}
 		else if(x == x.parent.right && (uncle == null || uncle.color == _BLACK) && (x.parent.left == null || x.parent.left.color == _BLACK)){
 		    //System.out.println("-------Case 3 applied-----------II");
+		    
 		    RBNode y,z;						// case 3 (Sibling is black and Uncle is Black)
 		    y = x.parent;					// case 3
 		    z = x.parent.parent;				// case 3
 		    x = zigZigType1(x,y,z);				// case 3
+		    if(flag)
+		    System.out.println("Case 3: "+x.key);
 		    //System.out.println("x= "+x.key);
 		}
 	    }
 	}// while
 	return x;
     }
-
+    public void decreaseNumberOfNodes(RBNode node_to_be_deleted) {
+	node_to_be_deleted = node_to_be_deleted.parent;
+	node_to_be_deleted.number_of_nodes -=1;
+	while(node_to_be_deleted.parent!=null) {
+	    node_to_be_deleted.number_of_nodes -= 1;
+	    node_to_be_deleted=node_to_be_deleted.parent;
+	}
+    }
     public RBNode deleteRB(RBNode node_to_be_deleted, RBNode root) {
 	// TODO Auto-generated method stub
 	System.out.print(node_to_be_deleted.key+" ");
@@ -281,7 +300,7 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	    }
 	    // when sibling is in right side of its parent
 	    else{
-		System.out.println("called");
+		 
 		drbNode = zigZigInverseType2(drbNode, parent, sibling,true);
 		sibling = parent.right;
 		 
@@ -291,7 +310,7 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	if(sibling.color == _BLACK && ((sibling.left == null && sibling.right == null) || (sibling.left.color == _BLACK && sibling.right.color == _BLACK))){
 	    //System.out.println("----------Case 2 is called---------");
 	    if(parent.color == _RED){				// parent color is red	
-		System.out.println("called 1 ");
+		 
 		parent.color  =  _BLACK; sibling.color = _RED;
 		drbNode = parent;
 	    }
@@ -313,9 +332,22 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    else if(sibling.parent!=null) sibling.parent.right = e;
 		    sibling.parent = e;
 		    e.left = sibling;
-		    if(z != null) z.parent = sibling;
+		    
+		    // Number of nodes update
+		    if(sibling.parent != null) sibling.parent.number_of_nodes -= sibling.number_of_nodes;
+		    if(z != null) {
+			z.parent = sibling;
+			//Number of nodes update
+			e.number_of_nodes -= z.number_of_nodes;
+			sibling.number_of_nodes += z.number_of_nodes;
+		    }
+		    //Number of nodes Update
+		    e.number_of_nodes += sibling.number_of_nodes;
+		    if(e.parent != null) e.parent.number_of_nodes += e.number_of_nodes;
+		    
 		    e.color = sibling.color + e.color - (sibling.color = e.color);
 		    sibling = e;
+		    
 		}
 		//case 4
 		if(sibling.right != null && sibling.right.color == _RED)
@@ -331,9 +363,24 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    else if(sibling.parent!=null) sibling.parent.right = d;
 		    sibling.parent = d;
 		    d.right = sibling;
-		    if(w != null) w.parent = sibling; 
+		   
+		    // Number of nodes update
+		    if(sibling.parent != null) sibling.parent.number_of_nodes -= sibling.number_of_nodes;
+		    sibling.number_of_nodes -= d.number_of_nodes;
+		    
+		    if(w != null) {
+			w.parent = sibling;
+			//Number of nodes update
+			d.number_of_nodes -= w.number_of_nodes;
+			sibling.number_of_nodes += w.number_of_nodes;
+		    }
+		    //Number of nodes Update
+		    d.number_of_nodes += sibling.number_of_nodes;
+		    if(d.parent != null) d.parent.number_of_nodes += d.number_of_nodes;
 		    d.color = sibling.color + d.color - (sibling.color = d.color);
 		    sibling = d;
+		    
+		     
 		}
 		//case 4
 		if(sibling.right != null && sibling.right.color == _RED)
@@ -361,10 +408,22 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	parent.parent = sibling;
 	parent.color  = case1or3 == true ? _RED : _BLACK;
 	parent.left   = t1;
-	if(t1 != null) t1.parent = parent;
 	
+	// Update number of nodes
+	parent.number_of_nodes -= sibling.number_of_nodes;
+	
+	if(t1 != null) {
+	    t1.parent = parent;
+	    // Update number of nodes
+	    sibling.number_of_nodes -= t1.number_of_nodes;
+	    parent.number_of_nodes += t1.number_of_nodes;
+	}
+	// here parent variable is parent of x not sibling
+	sibling.number_of_nodes += parent.number_of_nodes;
+	// in case == 1 flag is true else false
 	if(!case1or3)
 	    if(sibling.left != null ) sibling.left.color = _BLACK;
+	
 	return sibling;
 		
     }
@@ -386,8 +445,17 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	parent.parent = sibling;
 	parent.color  = case1or3 == true ? _RED : _BLACK;
 	parent.right   = t1;
-	if(t1 != null) t1.parent=parent;
 	
+	// Update number of nodes
+	parent.number_of_nodes -= sibling.number_of_nodes;
+	if(t1 != null) {
+	    t1.parent=parent;
+	    // Update number of nodes
+	    sibling.number_of_nodes -= t1.number_of_nodes;
+	    parent.number_of_nodes += t1.number_of_nodes;
+	}
+	// here parent variable is parent of x not sibling
+	sibling.number_of_nodes += parent.number_of_nodes;
 	if(!case1or3)
 	    if(sibling.right != null ) sibling.right.color = _BLACK;
 	
@@ -425,7 +493,7 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	if(t2 != null) {
 	    t2.parent=z;
 	    z.number_of_nodes += t2.number_of_nodes;
-	    x.number_of_nodes += t2.number_of_nodes;
+	    x.number_of_nodes -= t2.number_of_nodes;
 	}
 
 	//update colors
@@ -451,17 +519,19 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 	
 	y.right=t3;
 	z.left=t4;
-	y.number_of_nodes -= x.number_of_nodes;
 	z.number_of_nodes -= y.number_of_nodes;
+	y.number_of_nodes -= x.number_of_nodes;
+	
 	
 	if(t3 != null) {
 	    t3.parent=y;
 	    y.number_of_nodes += t3.number_of_nodes;
-	    
+	    x.number_of_nodes -= t3.number_of_nodes;
 	}
 	if(t4 != null) {
 	    t4.parent=z;
 	    z.number_of_nodes += t4.number_of_nodes;
+	    x.number_of_nodes -= t4.number_of_nodes;
 	}
 	
 	 //update colors

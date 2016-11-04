@@ -2,7 +2,7 @@ package dataStructures.rbtree;
 
 class RBNode{
     RBNode left, right, parent;
-    int key, color, number_of_nodes;     
+    int key, color, number_of_nodes, leftSum, rightSum;     
     
     
     public RBNode(){
@@ -13,8 +13,7 @@ class RBNode{
     public RBNode(int key){
 	left = right = parent = null;
 	this.key = key;
-	color = 0;
-	number_of_nodes = 0;
+	color=number_of_nodes=leftSum=rightSum=0;
     }
 }
 public class RBTree implements RBTreeFunctions{
