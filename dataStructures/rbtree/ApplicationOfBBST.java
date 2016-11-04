@@ -133,7 +133,10 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    temp.color = _BLACK; // fixing property 1 ( root should be BLACK) 
 		    return temp;
 		}
-		else return root;
+		else {
+		    while(temp.parent!= null) temp = temp.parent;
+		    return temp;
+		}
 	    }	
 	    else 
 		return root;
@@ -230,6 +233,7 @@ class ApplicationOfBBST extends RBTree implements BalancedBinarySearchTreeApplic
 		    
 		    if(node_to_be_deleted.parent!= null && node_to_be_deleted.parent.left == node_to_be_deleted) node_to_be_deleted.parent.left = node_to_be_deleted.right;
 		    else if(node_to_be_deleted.parent!= null) node_to_be_deleted.parent.right = node_to_be_deleted.right;
+		    
 		    node_to_be_deleted.right.parent = node_to_be_deleted.parent;
 		    node_to_be_deleted.right.color = _BLACK;
 		    

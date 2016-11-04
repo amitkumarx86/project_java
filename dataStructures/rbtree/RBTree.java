@@ -57,7 +57,10 @@ public class RBTree implements RBTreeFunctions{
 		    temp.color = _BLACK; // fixing property 1 ( root should be BLACK) 
 		    return temp;
 		}
-		else return root;
+		else {
+		    while(temp.parent!= null) temp = temp.parent;
+		    return temp;
+		}
 	    }	
 	    else 
 		return root;
