@@ -213,7 +213,7 @@ public class RBTree implements RBTreeFunctions{
 	    }
 	}
 	// Case 2 (When sibling's both children are black or both are null)
-	if(sibling.color == _BLACK && ((sibling.left == null && sibling.right == null) || (sibling.left.color == _BLACK && sibling.right.color == _BLACK))){
+	if(sibling.color == _BLACK && ((sibling.left == null && sibling.right == null) || ((sibling.left != null ? sibling.left.color : _BLACK) == _BLACK && sibling.right.color == _BLACK))){
 	    //System.out.println("----------Case 2 is called---------");
 	    if(parent.color == _RED){				// parent color is red		
 		parent.color  =  _BLACK; sibling.color = _RED;
@@ -229,7 +229,7 @@ public class RBTree implements RBTreeFunctions{
 	if (sibling.color == _BLACK && ((sibling.right!=null && sibling.right.color == _RED) || (sibling.left!=null && sibling.left.color == _RED))){
 	    // sibling to be in left side 
 	    if(sibling.parent.left == sibling){
-		if(sibling.left!=null && sibling.left.color == _RED){
+		if((sibling.right == null ? _BLACK : sibling.right.color) == _RED){
 		    RBNode e = sibling.right; e.parent = sibling.parent;
 		    RBNode z = e.left; 
 		    sibling.right = z;
@@ -242,12 +242,12 @@ public class RBTree implements RBTreeFunctions{
 		    sibling = e;
 		}
 		//case 4
-		if(sibling.right != null && sibling.right.color == _RED)
+		if(sibling.left != null && sibling.left.color == _RED)
 		    drbNode = zigZigInverseType1(drbNode, parent,sibling,false);
 	    }
 	    //case 3 for sibling to be in right side
 	    else{
-		if(sibling.left!=null && sibling.left.color == _RED){
+		if((sibling.left == null ? _BLACK : sibling.left.color) == _RED){
 		    RBNode d = sibling.left; d.parent = sibling.parent;
 		    RBNode w = d.right; 
 		    sibling.left = w;
