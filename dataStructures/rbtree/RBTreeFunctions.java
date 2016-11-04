@@ -14,4 +14,5 @@ public interface RBTreeFunctions {
     abstract RBNode zigZigType2(RBNode x, RBNode y, RBNode z);
     abstract void preOrder(RBNode root);
     abstract void inOrder(RBNode root);    
+    abstract void postOrder(RBNode root);
 }

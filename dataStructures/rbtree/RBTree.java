@@ -65,7 +65,7 @@ public class RBTree implements RBTreeFunctions{
 	 
     }
 
-    private RBNode insertFIXUP(RBNode x, RBNode root){
+    protected RBNode insertFIXUP(RBNode x, RBNode root){
 	while(x.parent != null && x.parent.color == _RED && x.color == _RED){
 	    if(x.parent == x.parent.parent.left){			// When x's parent is in left side of x's grand parent
 		RBNode uncle = x.parent.parent.right;			 
@@ -144,7 +144,10 @@ public class RBTree implements RBTreeFunctions{
 		
 		RBNode temp = doubleBlackFIXUP(null,node_to_be_deleted.parent); 
 		if(temp.parent == null ) { temp.color = _BLACK;return temp;}
-		else return root;
+		else {
+		    while(temp.parent != null) temp=temp.parent;
+		    return temp;
+		    }
 	    }
 	    else{
 		// Case 2: node_to_be_deleted has one left or right child
@@ -184,19 +187,23 @@ public class RBTree implements RBTreeFunctions{
 	}
     }
     
-    private RBNode doubleBlackFIXUP(RBNode drbNode, RBNode  parent){
-	//System.out.println("----------Delete FIXUP is called---------");
+    protected RBNode doubleBlackFIXUP(RBNode drbNode, RBNode  parent){
+	// drbNode is node on which double black problem is called
+	
+	// if parent is null then just return drbNode
 	if(parent == null) return drbNode;
 	
+	// decide which is sibling
 	RBNode sibling = parent.left == drbNode ? parent.right : parent.left;
 	
 	// Case 1: when sibling is red
 	if(sibling.color == _RED){				// Case 1 : Uncle is RED
-	    //System.out.println("----------Case 1 is called---------");
+	    // when sibling is in left side of its parent
 	    if(sibling.parent.left == sibling){
 		drbNode = zigZigInverseType1(drbNode, parent, sibling,true);
 		sibling = parent.left;
 	    }
+	    // when sibling is in right side of its parent
 	    else{
 		drbNode = zigZigInverseType2(drbNode, parent, sibling,true);
 		sibling = parent.right;
@@ -218,7 +225,7 @@ public class RBTree implements RBTreeFunctions{
 	}
 	// Case 3 (When sibling's one child is Red)
 	if (sibling.color == _BLACK && ((sibling.right!=null && sibling.right.color == _RED) || (sibling.left!=null && sibling.left.color == _RED))){
-	    //System.out.println("----------Case 3 is called---------");
+	    // sibling to be in left side 
 	    if(sibling.parent.left == sibling){
 		if(sibling.left!=null && sibling.left.color == _RED){
 		    RBNode e = sibling.right; e.parent = sibling.parent;
@@ -232,9 +239,11 @@ public class RBTree implements RBTreeFunctions{
 		    e.color = sibling.color + e.color - (sibling.color = e.color);
 		    sibling = e;
 		}
+		//case 4
 		if(sibling.right != null && sibling.right.color == _RED)
 		    drbNode = zigZigInverseType1(drbNode, parent,sibling,false);
 	    }
+	    //case 3 for sibling to be in right side
 	    else{
 		if(sibling.left!=null && sibling.left.color == _RED){
 		    RBNode d = sibling.left; d.parent = sibling.parent;
@@ -248,15 +257,16 @@ public class RBTree implements RBTreeFunctions{
 		    d.color = sibling.color + d.color - (sibling.color = d.color);
 		    sibling = d;
 		}
+		//case 4
 		if(sibling.right != null && sibling.right.color == _RED)
 		    drbNode = zigZigInverseType2(drbNode, parent,sibling,false);
 	    }
 	}	
-	
 	return drbNode;
     }
     
-    private RBNode zigZigInverseType1(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
+    // This is used in delete fix up
+    protected RBNode zigZigInverseType1(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
 	//System.out.println("called Type 1");
 	
 	sibling.parent = parent.parent;
@@ -280,7 +290,8 @@ public class RBTree implements RBTreeFunctions{
 	return sibling;
 		
     }
-    private RBNode zigZigInverseType2(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
+    // This is used in delete fix up
+    protected RBNode zigZigInverseType2(RBNode x, RBNode parent, RBNode sibling, boolean case1or3){
 	//System.out.println("called Type 2");
 	
 	sibling.parent = parent.parent;
@@ -292,8 +303,6 @@ public class RBTree implements RBTreeFunctions{
 		
 	RBNode t1;
 	t1 = sibling.left;
-	
-	
 	
 	sibling.left = parent; 
 	parent.parent = sibling;
@@ -308,7 +317,7 @@ public class RBTree implements RBTreeFunctions{
 	return sibling;
 		
     }
-    private RBNode inOrderPredecessor(RBNode node){
+    protected RBNode inOrderPredecessor(RBNode node){
 	if(node.left==null)
 	    return null;
 	node=node.left;
@@ -364,7 +373,7 @@ public class RBTree implements RBTreeFunctions{
 
     @Override
     public RBNode zigZagType1(RBNode x, RBNode y, RBNode z) {
-	// TODO Auto-generated method stub
+	// TODO When x is in left of z 
 	RBNode t2,t3;
 	t2 = x.left;t3 = x.right;
 	x.parent= z.parent;
@@ -391,7 +400,7 @@ public class RBTree implements RBTreeFunctions{
     
     @Override
     public RBNode zigZagType2(RBNode x, RBNode y, RBNode z) {
-	// TODO Auto-generated method stub
+	// TODO When x is in right of z 
 	RBNode t3,t4;
 	t3 = x.left;t4 = x.right;
 	x.left=y; x.parent= z.parent;
@@ -416,7 +425,7 @@ public class RBTree implements RBTreeFunctions{
     }
     @Override
     public RBNode zigZigType1(RBNode x, RBNode y, RBNode z) {
-	// TODO Auto-generated method stub
+	// TODO When x is in right of z 
 	RBNode t2=y.left;
 	y.left=z;
 	y.parent=z.parent;
@@ -441,7 +450,7 @@ public class RBTree implements RBTreeFunctions{
 
     @Override
     public RBNode zigZigType2(RBNode x, RBNode y, RBNode z) {
-	// TODO Auto-generated method stub
+	// TODO When x is in left of z 
 	RBNode t3=y.right;
 	y.right = z; y.parent=z.parent;
 	 
@@ -483,4 +492,13 @@ public class RBTree implements RBTreeFunctions{
 	inOrder(root.right);
     }
     
+    @Override
+    public void postOrder(RBNode root) {
+	// TODO Auto-generated method stub
+	if(root == null)
+	    return;
+	postOrder(root.left);	
+	postOrder(root.right);
+	System.out.println(root.key+" color:"+ (root.color == 0 ? "B":"R")+" left : "+ (root.left != null ? root.left.key : "n/a")+" right : "+ (root.right != null ? root.right.key : "n/a"));
+    }
 }
